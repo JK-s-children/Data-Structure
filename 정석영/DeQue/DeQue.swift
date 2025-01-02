@@ -11,8 +11,8 @@ protocol DeQueADT {
   
   var count: Int { get }
   var isEmpty: Bool { get }
-  var top: T? { get }
-  var bottom: T? { get }
+  var front: T? { get }
+  var back: T? { get }
   
   mutating func enqueueFront(_ element: T)
   mutating func enqueueBack(_ element: T)
@@ -26,8 +26,8 @@ struct Deque<T>: DeQueADT {
   
   var count: Int { elements.count }
   var isEmpty: Bool { elements.isEmpty }
-  var top: T? { elements.last }
-  var bottom: T? { elements.first }
+  var front: T? { elements.first }
+  var back: T? { elements.last }
 }
 
 // MARK: - Methods
@@ -41,10 +41,12 @@ extension Deque {
   }
   
   mutating func dequeueFront() -> T? {
-    defer { elements.reverse() }
-    
-    elements.reverse()
-    return dequeueBack()
+    guard !elements.isEmpty else { return nil }
+    let newElements = elements.dropFirst()
+
+    defer { elements = Array(newElements) }
+
+    return elements[0]
   }
   
   mutating func dequeueBack() -> T? {

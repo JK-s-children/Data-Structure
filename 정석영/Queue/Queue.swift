@@ -11,7 +11,7 @@ protocol QueueADT {
   
   var count: Int { get }
   var isEmpty: Bool { get }
-  var top: T? { get }
+  var front: T? { get }
   
   mutating func enqueue(_ element: T)
   mutating func dequeue() -> T?
@@ -20,11 +20,10 @@ protocol QueueADT {
 // MARK: - Data Structure
 struct Queue<T>: QueueADT {
   private var elements: [T] = []
-  private var head: Int = 0
   
-  var count: Int { elements.count - head }
-  var isEmpty: Bool { head == elements.count }
-  var top: T? { elements.last }
+  var count: Int { elements.count }
+  var isEmpty: Bool { elements.isEmpty }
+  var front: T? { elements.first }
 }
 
 // MARK: - Methods
@@ -36,9 +35,11 @@ extension Queue {
 
   /// O(1)
   mutating func dequeue() -> T? {
-    defer { elements.reverse() }
-    elements.reverse()
+    guard !elements.isEmpty else { return nil }
+    let newElements = elements.dropFirst()
 
-    return elements.popLast()
+    defer { elements = Array(newElements) }
+
+    return elements[0]
   }
 }
